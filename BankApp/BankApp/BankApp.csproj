@@ -53,7 +53,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\Appdata.cs" />
+    <Compile Include="Classes\MoneyClass.cs" />
+    <Compile Include="Classes\Operation.cs" />
     <Compile Include="Classes\PersonPartialClass.cs" />
+    <Compile Include="Classes\Resources.cs" />
     <Compile Include="Entities\Currency.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>

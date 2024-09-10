@@ -12,6 +12,7 @@ namespace BankApp
     {
         static void Main(string[] args)
         {
+           
             while (true) 
             {
                 Console.WriteLine("Добро пожаловать в приложение банка");
@@ -51,6 +52,7 @@ namespace BankApp
                     case "2":
                         {
                             Console.WriteLine("Вы вышли из приложения");
+                            
                             return;
                         }
                 }
@@ -69,7 +71,7 @@ namespace BankApp
                 }
                 return false;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Console.WriteLine("Ошибка подключения к базе данных");
                 return false;
@@ -78,29 +80,77 @@ namespace BankApp
 
         static private void MainMenu(Person person)
         {
+            bool checkCycle = true;
+
             Console.Clear();
             Console.WriteLine($"Добро пожаловать {person.Name}!");
-            Console.WriteLine("Выберите из списка действие, которое хотите совершить:");
-            Console.WriteLine("1 - Проверить баланс\n2 - Потратить бабосики\n3 - Просмотреть статистику\n4 - Управление аккаунтом\n5 - Выйти в главное меню");
-            switch (Console.ReadLine())
+            while (checkCycle)
             {
-                case "1":
-                    {
-                        List<UserMoney> userBankAccount = Appdata.Context.UserMoney.ToList().Where(p=>p.Person == person).ToList();
-                        foreach (var currency in userBankAccount)
-                            Console.WriteLine($"Валюта: {currency.Currency.CurrencyName} | Количество: {currency.Value.ToString()}");
+                Console.Clear();
+                Console.WriteLine("Выберите из списка действие, которое хотите совершить:");
+                Console.WriteLine("1 - Проверить баланс\n2 - Потратить бабосики\n3 - Просмотреть статистику\n4 - Выйти в главное меню");
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        {
+                            Console.Clear();
+                            List<UserMoney> userBankAccount = Appdata.Context.UserMoney.ToList().Where(p=>p.Person == person).ToList();
+                            foreach (var currency in userBankAccount)
+                                Console.WriteLine($"Валюта: {currency.Currency.CurrencyName} | Количество: {currency.Value.ToString()}");
 
-                        Console.WriteLine("Для выхода в главное меню нажмите Enter");
-                        if (Console.ReadKey().Key == ConsoleKey.Enter)
+                            Console.WriteLine("Для выхода в главное меню нажмите Enter");
+                            if (Console.ReadKey().Key == ConsoleKey.Enter)
+                                break;
                             break;
+                        }
+                    case "2":
+                        {
+                            Console.Clear();
+                            //Создаём экземпляр класса для работы с данными о балансе
+                            Operation operation = new Operation();
+
+                            Console.WriteLine("Выберите куда потратить деньги");
+                            Console.WriteLine("1 - Переводы\n2 - Оплата покупок");
+                            switch (Console.ReadLine())
+                            {
+                                case "1":
+                                    {
+                                        Console.WriteLine("Введите следующие параметры:");
+                                        Console.WriteLine("Номер аккаунта получателя:");
+                                        int accountId = Convert.ToInt32(Console.ReadLine());
+                                        Console.WriteLine("Выберите доступную валюту для перевода:");
+
+                                        List<UserMoney> userMoney = Appdata.Context.UserMoney.ToList().Where(p => p.Person == person).ToList();
+                                        for (int i = 0; i < userMoney.Count; i++)
+                                            Console.WriteLine($"{i+1}. {userMoney[i].Currency.CurrencyName}");
+                                        
+                                        int currencyType = Convert.ToInt32(Console.ReadLine())-1;
+                                        if (currencyType > userMoney.Count)
+                                        {
+                                            Console.WriteLine("Ошибка выбора валюты");
+                                            break;
+                                        }
+
+                                        Console.WriteLine("Введите количество валюты для перевода: ");
+                                        float value = float.Parse(Console.ReadLine());
+
+                                        Console.WriteLine($"Подвердить следующую операцию?\n{Appdata.currentPerson.Name} {accountId} {userMoney[currencyType].Currency.CurrencyName} {value}");
+                                        Console.ReadKey();
+
+                                        operation.moneyTransfer(Appdata.currentPerson, accountId, userMoney[currencyType].Currency, value);
+                                        break;
+                                    }
+                                case "2":
+                                    {
+
+                                        break;
+                                    }
+                            }
+                            break;
+                        }
+                    default:
                         break;
-                    }
-                case "2":
-                    {
-                        break;
-                    }
-                default:
-                    break;
+                }
             }
         }
 
