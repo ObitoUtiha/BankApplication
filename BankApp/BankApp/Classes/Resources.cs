@@ -13,7 +13,7 @@ namespace BankApp.Classes
 
 
         // Список сообщений для консоли 
-        // Пример использования:  Console.WriteLine(Resources.messagesToConsole[Resources.messages.Continue].ToString());
+        // Пример использования:  Console.WriteLine(Resources.messagesToConsole[Resources.messages.Continue]);
         public enum messages {
             Exit = 1,
             Continue,
