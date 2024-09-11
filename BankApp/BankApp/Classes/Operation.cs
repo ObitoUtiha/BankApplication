@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,6 +11,14 @@ namespace BankApp.Classes
 {
     public class Operation
     {
+
+        public void exceptionCheck(Person sender)
+        {
+            if (sender != Appdata.currentPerson)
+                throw new Exception("Ошибка сервера");
+
+        }
+
         /// <summary>
         /// Метод обработки перевода с одного счёта на другой
         /// </summary>
@@ -20,12 +29,13 @@ namespace BankApp.Classes
         /// <exception cref="Exception"></exception>
         public async void moneyTransfer(Person sender, int recipientId, Currency currency, float value)
         {
-            if (sender != Appdata.currentPerson)
-                throw new Exception("Ошибка сервера");
+            exceptionCheck(sender);
+
             try
             {
                 //Счета пользователя в разных валютах
                 UserMoney userBankAccount = Appdata.Context.UserMoney.ToList().Where(p=>p.PersonId == sender.PersonId).Where(p=>p.Currency == currency).FirstOrDefault();
+                
 
                 // Блок проверки пользователя для перевода
                 if (Appdata.Context.Person.Where(p => p.PersonId == recipientId).Any() == false)
@@ -96,9 +106,7 @@ namespace BankApp.Classes
         /// <param name="value"></param>
         public async void moneyTransfer(Person sender, Currency currency, float value)
         {
-            if (sender != Appdata.currentPerson)
-                throw new Exception("Ошибка сервера");
-
+            exceptionCheck(sender);
 
             try
             {

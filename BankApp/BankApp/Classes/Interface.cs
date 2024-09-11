@@ -42,57 +42,72 @@ namespace BankApp.Classes
                             {
                                 case "1": //Перевод
                                     {
-                                        Console.WriteLine("Введите следующие параметры:");
-                                        Console.WriteLine("Номер аккаунта получателя:");
-                                        int accountId = Convert.ToInt32(Console.ReadLine());
-                                        Console.WriteLine("Выберите доступную валюту для перевода:");
+                                        try { 
+                                            Console.WriteLine("Введите следующие параметры:");
+                                            Console.WriteLine("Номер аккаунта получателя:");
+                                            int accountId = Convert.ToInt32(Console.ReadLine());
+                                            Console.WriteLine("Выберите доступную валюту для перевода:");
 
-                                        List<UserMoney> userMoney = Appdata.Context.UserMoney.ToList().Where(p => p.Person == person).ToList();
-                                        for (int i = 0; i < userMoney.Count; i++)
-                                            Console.WriteLine($"{i + 1}. {userMoney[i].Currency.CurrencyName}");
+                                            List<UserMoney> userMoney = Appdata.Context.UserMoney.ToList().Where(p => p.Person == person).ToList();
+                                            for (int i = 0; i < userMoney.Count; i++)
+                                                Console.WriteLine($"{i + 1}. {userMoney[i].Currency.CurrencyName}");
 
-                                        int currencyType = Convert.ToInt32(Console.ReadLine()) - 1;
-                                        if (currencyType > userMoney.Count)
-                                        {
-                                            Console.WriteLine("Ошибка выбора валюты");
-                                            break;
+                                            int currencyType = Convert.ToInt32(Console.ReadLine()) - 1;
+                                            if (currencyType > userMoney.Count)
+                                            {
+                                                Console.WriteLine("Ошибка выбора валюты");
+                                                break;
+                                            }
+
+                                            Console.WriteLine("Введите количество валюты для перевода: ");
+                                            float value = float.Parse(Console.ReadLine());
+
+                                            Console.WriteLine($"Подвердить следующую операцию?\n" +
+                                                $"\nВаш аккаунт: {Appdata.currentPerson.PersonId} " +
+                                                $"\nНомер банвоского счёта для перевода: {accountId} " +
+                                                $"\nВалюта: {userMoney[currencyType].Currency.CurrencyName} " +
+                                                $"\nКоличество: {value}");
+                                            Console.ReadKey();
+
+                                            operation.moneyTransfer(Appdata.currentPerson, accountId, userMoney[currencyType].Currency, value);
+                                            Console.ReadKey();
+                                            Console.WriteLine(Resources.messagesToConsole[Resources.messages.Continue]);
                                         }
-
-                                        Console.WriteLine("Введите количество валюты для перевода: ");
-                                        float value = float.Parse(Console.ReadLine());
-
-                                        Console.WriteLine($"Подвердить следующую операцию?\n" +
-                                            $"\nВаш аккаунт: {Appdata.currentPerson.PersonId} " +
-                                            $"\nНомер банвоского счёта для перевода: {accountId} " +
-                                            $"\nВалюта: {userMoney[currencyType].Currency.CurrencyName} " +
-                                            $"\nКоличество: {value}");
-                                        Console.ReadKey();
-
-                                        operation.moneyTransfer(Appdata.currentPerson, accountId, userMoney[currencyType].Currency, value);
-                                        Console.ReadKey();
-                                        Console.WriteLine(Resources.messagesToConsole[Resources.messages.Continue]);
+                                        catch(FormatException)
+                                        {
+                                            Console.WriteLine("Вводите соответствующие значения в поля");
+                                            Console.ReadKey();
+                                        }    
                                         break;
                                     }
                                 case "2": //Обычная трата
                                     {
-                                        Console.WriteLine("Выберите доступную валюту для траты:");
-
-                                        List<UserMoney> userMoney = Appdata.Context.UserMoney.ToList().Where(p => p.Person == person).ToList();
-                                        for (int i = 0; i < userMoney.Count; i++)
-                                            Console.WriteLine($"{i + 1}. {userMoney[i].Currency.CurrencyName}");
-
-                                        int currencyType = Convert.ToInt32(Console.ReadLine()) - 1;
-                                        if (currencyType > userMoney.Count)
+                                        try
                                         {
-                                            Console.WriteLine("Ошибка выбора валюты");
-                                            break;
+                                            Console.WriteLine("Выберите доступную валюту для траты:");
+
+                                            List<UserMoney> userMoney = Appdata.Context.UserMoney.ToList().Where(p => p.Person == person).ToList();
+                                            for (int i = 0; i < userMoney.Count; i++)
+                                                Console.WriteLine($"{i + 1}. {userMoney[i].Currency.CurrencyName}");
+
+                                            int currencyType = Convert.ToInt32(Console.ReadLine()) - 1;
+                                            if (currencyType > userMoney.Count)
+                                            {
+                                                Console.WriteLine("Ошибка выбора валюты");
+                                                break;
+                                            }
+
+                                            Console.WriteLine("Введите количество валюты для траты: ");
+                                            float value = float.Parse(Console.ReadLine());
+
+                                            operation.moneyTransfer(Appdata.currentPerson, userMoney[currencyType].Currency, value);
+                                            Console.WriteLine(Resources.messagesToConsole[Resources.messages.Continue]);
                                         }
-
-                                        Console.WriteLine("Введите количество валюты для траты: ");
-                                        float value = float.Parse(Console.ReadLine());
-
-                                        operation.moneyTransfer(Appdata.currentPerson, userMoney[currencyType].Currency, value);
-                                        Console.WriteLine(Resources.messagesToConsole[Resources.messages.Continue]);
+                                        catch (FormatException)
+                                        {
+                                            Console.WriteLine("Вводите соответствующие значения в поля");
+                                            Console.ReadKey();
+                                        }
                                         break;
                                     }
                             }
